@@ -6,14 +6,14 @@ set(HEADERS
 	src/Parser.h
 	src/GameEnums.h
 	src/RandomBot.h
-	src/BobikBot.h)
+	src/BobBot.h)
 
 set(SOURCES 
 	src/Board.cpp 
 	src/Bot.cpp 
 	src/Parser.cpp
 	src/RandomBot.cpp
-	src/BobikBot.cpp 
+	src/BobBot.cpp 
 	main.cpp)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
@@ -24,4 +24,4 @@ else ()
 	message(FATAL_ERROR "${CMAKE_CXX_COMPILER_ID} is not supported")
 endif ()
 
-add_executable(Bobik ${SOURCES} ${HEADERS})
+add_executable(bob ${SOURCES} ${HEADERS})

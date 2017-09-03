@@ -1,6 +1,8 @@
-#include "BobikBot.h"
+#include "BobBot.h"
 
-void BobikBot::Move(int time) {
+void BobBot::Move(int time) 
+{
+
 	auto moves = board.LegalMoves(playerId);
 	if (moves.empty())
 	{
