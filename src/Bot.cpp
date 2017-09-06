@@ -9,7 +9,7 @@ Bot::Bot()
 {
 }
 
-void Bot::MakeMove(BoardMoves boardMove) 
+void Bot::MakeMove(Directions boardMove) 
 {
 	cout << BOARD_MOVES[static_cast<int>(boardMove)] << endl;
 }
@@ -39,7 +39,7 @@ void Bot::SetYourBot(const string& name)
 	this->botName = name;
 };
 
-void Bot::SetYourBotId(Player playerId) 
+void Bot::SetYourBotId(Players playerId) 
 { 
 	this->playerId = playerId;  
 };

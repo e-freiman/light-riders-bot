@@ -4,10 +4,21 @@ void RandomBot::Move(int time) {
 	auto moves = board.LegalMoves(playerId);
 	if (moves.empty())
 	{
-		MakeMove(BoardMoves::UP);
+		MakeMove(Directions::UP);
 		return;
 	}
 
-	MakeMove(moves[rand() % moves.size()]);
+
+	decltype(moves)::const_iterator selected;
+	
+	int i = 0;
+	int selected_i = rand() % moves.size();
+
+	for (selected = moves.cbegin(); selected != moves.cend(); selected++)
+	{
+		if (i++ == selected_i) break;
+	}
+
+	MakeMove(*selected);
 }
 

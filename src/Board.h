@@ -2,7 +2,9 @@
 #define BOARD_H
 
 #include <sstream>
+#include <set>
 #include <vector>
+#include <queue>
 #include <array>
 #include "GameEnums.h"
 #include <functional>
@@ -11,30 +13,54 @@
 constexpr int N_PLAYERS = 2;
 constexpr int BOARD_SIZE = 16;
 
-class Board
+class Board final
 {
 public:
 	using Position = std::pair<int, int>;
 	using Route = std::vector<Position>;
+	//the first index is to the right (x), the second index is to the down (y)
+	template<typename T> using BoardData = std::array<std::array<T, BOARD_SIZE>, BOARD_SIZE>;
+	using BoardVisitedData = BoardData < std::optional<Directions>>;
+	Position MakePosition(int first, int second);
 
 private:
-	std::array<Position, N_PLAYERS> player_positions;
-	std::array<std::array<bool, BOARD_SIZE>, BOARD_SIZE> board;
+	std::array<Position, N_PLAYERS> pl_pos;
+	BoardData<bool> board;
+	//s - position from which exploration goes
+	//p - position which is explore
+	void Explore(Position s, Position p, std::queue<Position>& to_explore, BoardVisitedData& visited, const Route& route);
 
 public:	
+	//Creates an empty board
 	Board();
-	Board(std::stringstream &&stream);
-
-	std::vector<BoardMoves> LegalMoves(Player pl);
-
-	//Traverses game board from the source by using BFS method
-	//func - function that is called for each available square (first parameter indicates if square contains a head, the second if square is located near a wall or tail), 
-	//if func returns false - traversing stops, otherwise traversing continues
-	void BfsTraverse(const Position& source, std::function<bool(std::optional<Player> head, bool near_wall)> func);
-
+	//Creates a board from a stream
+	Board(std::stringstream &&stream);	
+	//Returns set of available moves
+	std::set<Directions> LegalMoves(Players pl);
+	//Returns if specified position contains a tail
+	bool operator[](const Position& p);
+	//Returns position of the head of a specified player
+	Position Head(Players pl);
+	//Traverses game board from the source by using BFS method, tails board boundaries and route (the second parameter) 
+	//are considered as a constraints
+	//func - function that is called for each available square (the firts parameter indicates position of a square,
+	//the second contains an array of squares, value in each square directs to the square from which we got to the current square)
+	//if func returns true - traversing stops (and BfsTraverse returns true), otherwise traversing continues
+	//if all available squares were traversed and func always returning false, BfsTraverse returns false
+	//Parameters that are passed to func only garantee to exsit inside func function
+	bool BfsTraverse(const Position& source, const Route& route, std::function<bool(const Position&, const BoardVisitedData&)> func);
+	//Returns true if heads are conected. Specified route is considered as constraints (along with tails and board bondaries)
 	bool AreHeadsConnected(const Route& route);
-	int AvailableSpace(Player pl, const Route& route);
-	int Distance(Player pl, const Route& route);
+	//Returns available space for for a player. Specified route is considered as constraints (along with tails and board bondaries)
+	int AvailableSpace(Players pl, const Route& route);
+	//Returns a route from specified player's head to the destination (includes both edges)
+	Route RouteTo(Players pl, std::function<bool(const Position& pos)> stopping_criteria);
+	//Returns distance from player's head to specified root
+	//Uses method RouteTo inside
+	//0 - the route doesnot exist
+	//1 - the route goes from the head
+	//2 - the route is next to the head
+	int Distance(Players pl, const Route& route);
 };
 
 #endif

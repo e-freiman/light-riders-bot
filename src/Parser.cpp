@@ -114,7 +114,7 @@ void Parser::ProcessSettings() {
 	case s2i(SETTING_YOUR_BOTID):
 	{
 		int id = stoi(NextCmd());
-		bot->SetYourBotId((id == 0) ? Player::Pl1 : Player::Pl2);
+		bot->SetYourBotId((id == 0) ? Players::Pl1 : Players::Pl2);
 		break;
 	}
 	case s2i(SETTING_FIELD_WIDTH):

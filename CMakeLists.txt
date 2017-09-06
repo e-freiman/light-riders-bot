@@ -17,7 +17,7 @@ set(SOURCES
 	main.cpp)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -static -Isrc -O2 -lm")
 else ()

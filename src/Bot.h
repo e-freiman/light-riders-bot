@@ -7,7 +7,7 @@
 class Bot 
 {
 protected:
-	Player playerId;
+	Players playerId;
 	int timeBank;
 	int timePerMove;
 	std::string botName;
@@ -15,7 +15,7 @@ protected:
 	
 	int round;
 	Board board;
-	void MakeMove(BoardMoves boardMove);
+	void MakeMove(Directions boardMove);
 
 public:
 	Bot();
@@ -31,7 +31,7 @@ public:
 	void SetTimebank(int time);
 	void SetTimePerMove(int time);
 	void SetYourBot(const std::string& name);
-	void SetYourBotId(Player playerId);
+	void SetYourBotId(Players playerId);
 	void SetPlayerNames(const std::string& player1, const std::string& player2);
 };
 

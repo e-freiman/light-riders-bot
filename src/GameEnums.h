@@ -1,17 +1,18 @@
 #ifndef GAMEENUMS_H
 #define GAMEENUMS_H
 
-enum class Player 
+enum class Players 
 {
 	Pl1 = 0, 
 	Pl2 = 1
 };
 
-enum class BoardMoves {
+enum class Directions {
 	UP,
 	DOWN,
 	LEFT,
-	RIGHT
+	RIGHT,
+	SOURCE
 };
 
 #endif
