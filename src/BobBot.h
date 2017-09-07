@@ -5,6 +5,7 @@
 
 class BobBot : public Bot
 {
+public:
 	void Move(int time);
 };
 

@@ -20,7 +20,7 @@ public:
 	using Route = std::vector<Position>;
 	//the first index is to the right (x), the second index is to the down (y)
 	template<typename T> using BoardData = std::array<std::array<T, BOARD_SIZE>, BOARD_SIZE>;
-	using BoardVisitedData = BoardData < std::optional<Directions>>;
+	using BoardVisitedData = BoardData<std::optional<std::pair<Directions, int>>>;
 	Position MakePosition(int first, int second);
 
 private:
@@ -42,13 +42,16 @@ public:
 	//Returns position of the head of a specified player
 	Position Head(Players pl);
 	//Traverses game board from the source by using BFS method, tails board boundaries and route (the second parameter) 
-	//are considered as a constraints
+	//are considered as constraints
 	//func - function that is called for each available square (the firts parameter indicates position of a square,
-	//the second contains an array of squares, value in each square directs to the square from which we got to the current square)
+	//the second contains an array of squares, value in each square is a pair: first - directs to the square from which we got to 
+	//the current square, second - distance from the source)
 	//if func returns true - traversing stops (and BfsTraverse returns true), otherwise traversing continues
-	//if all available squares were traversed and func always returning false, BfsTraverse returns false
+	//if all available squares were traversed and func was always returning false, BfsTraverse returns false
 	//Parameters that are passed to func only garantee to exsit inside func function
 	bool BfsTraverse(const Position& source, const Route& route, std::function<bool(const Position&, const BoardVisitedData&)> func);
+	//Traverses game board from the source by using DFS method. All parameters are the same as in BfsTraverse method
+	bool DfsTraverse(const Position& source, const Route& route, std::function<bool(const Position&, const BoardVisitedData&)> func);
 	//Returns true if heads are conected. Specified route is considered as constraints (along with tails and board bondaries)
 	bool AreHeadsConnected(const Route& route);
 	//Returns available space for for a player. Specified route is considered as constraints (along with tails and board bondaries)
@@ -57,10 +60,12 @@ public:
 	Route RouteTo(Players pl, std::function<bool(const Position& pos)> stopping_criteria);
 	//Returns distance from player's head to specified root
 	//Uses method RouteTo inside
-	//0 - the route doesnot exist
-	//1 - the route goes from the head
-	//2 - the route is next to the head
+	//-1 - the route doesnot exist
+	//0 - the route goes from the head
+	//1 - the route is next to the head
 	int Distance(Players pl, const Route& route);
+	//Returns the longest possible way for the player (approximated by DFS search)
+	Route LongestWay(Players pl);
 };
 
 #endif

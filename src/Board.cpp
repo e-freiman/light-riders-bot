@@ -15,16 +15,16 @@ Board::Board(stringstream &&stream)
 	{
 		board[x][y] = (line == ".");
 
-if (line == PLAYER_0)
-pl_pos[static_cast<int>(Players::Pl1)] = make_pair(x, y);
+		if (line == PLAYER_0)
+			pl_pos[static_cast<int>(Players::Pl1)] = make_pair(x, y);
 
-if (line == PLAYER_1)
-pl_pos[static_cast<int>(Players::Pl2)] = make_pair(x, y);
+		if (line == PLAYER_1)
+			pl_pos[static_cast<int>(Players::Pl2)] = make_pair(x, y);
 
-x = (x + 1) % BOARD_SIZE;
+		x = (x + 1) % BOARD_SIZE;
 
-if (x == 0)
-y++;
+		if (x == 0)
+			y++;
 	}
 }
 
@@ -50,10 +50,12 @@ void Board::Explore(Position s, Position p, std::queue<Position>& to_explore, Bo
 	bool hit_route = std::find(route.cbegin(), route.cend(), p) != route.cend();
 	if (in_boundaries && !visited[p.first][p.second].has_value() && !hit_tail && !hit_route)
 	{
-		if (s.first < p.first) visited[p.first][p.second] = Directions::LEFT;
-		if (s.first > p.first) visited[p.first][p.second] = Directions::RIGHT;
-		if (s.second < p.second) visited[p.first][p.second] = Directions::UP;
-		if (s.second > p.second) visited[p.first][p.second] = Directions::DOWN;
+		int distance = visited[s.first][s.second].value().second + 1;
+
+		if (s.first < p.first) visited[p.first][p.second] = std::make_pair(Directions::LEFT, distance);
+		if (s.first > p.first) visited[p.first][p.second] = std::make_pair(Directions::RIGHT, distance);
+		if (s.second < p.second) visited[p.first][p.second] = std::make_pair(Directions::UP, distance);
+		if (s.second > p.second) visited[p.first][p.second] = std::make_pair(Directions::DOWN, distance);
 		to_explore.push(p);
 	}
 }
@@ -72,7 +74,7 @@ bool Board::BfsTraverse(const Position& source, const Route& route, std::functio
 
 	queue<Position> to_explore;
 	to_explore.push(source);
-	visited[source.first][source.second] = Directions::SOURCE;
+	visited[source.first][source.second] = std::make_pair(Directions::SOURCE, 0);
 
 	while (!to_explore.empty())
 	{
@@ -90,6 +92,14 @@ bool Board::BfsTraverse(const Position& source, const Route& route, std::functio
 		Explore(square, MakePosition(square.first, square.second - 1), to_explore, visited, route);
 	}
 
+	return false;
+}
+
+bool Board::DfsTraverse(const Position& source, const Route& route, std::function<bool(const Position&, const BoardVisitedData&)> func)
+{
+	BoardVisitedData visited;
+
+	//TODO
 	return false;
 }
 
@@ -120,11 +130,11 @@ Board::Route Board::RouteTo(Players pl, function<bool(const Position& pos)> stop
 		{
 			Position pos = p;
 
-			while (visited[pos.first][pos.second] != Directions::SOURCE)
+			while (visited[pos.first][pos.second].value().first != Directions::SOURCE)
 			{
 				route.emplace(route.begin(), pos);
 
-				switch (visited[pos.first][pos.second].value())
+				switch (visited[pos.first][pos.second].value().first)
 				{
 				case Directions::UP:
 					pos.second--;
@@ -155,12 +165,20 @@ Board::Route Board::RouteTo(Players pl, function<bool(const Position& pos)> stop
 
 int Board::Distance(Players pl, const Route& route)
 {
-	auto predicate = [&route](const auto& pos) 
+	int distance = -1;
+	auto predicate = [&route, &distance](const auto& p, const auto& visited)
 	{
-		return std::find(route.cbegin(), route.cend(), pos) != route.cend(); 
+		if (std::find(route.cbegin(), route.cend(), p) != route.cend())
+		{
+			distance = visited[p.first][p.second].value().second;
+			return true;
+		}
+		return false;
 	};
 
-	return RouteTo(pl, predicate).size();
+	BfsTraverse(pl_pos[static_cast<int>(pl)], Route(), predicate);
+
+	return distance;
 }
 
 bool Board::operator[](const Position& p)
@@ -171,4 +189,13 @@ bool Board::operator[](const Position& p)
 Board::Position Board::Head(Players pl)
 {
 	return pl_pos[static_cast<int>(pl)];
+}
+
+Board::Route Board::LongestWay(Players pl)
+{
+	Route route;
+
+	//TODO
+
+	return route;
 }
