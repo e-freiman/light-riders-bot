@@ -10,26 +10,30 @@
 #include <functional>
 #include <optional>
 
+#include "Position.h"
+
 constexpr int N_PLAYERS = 2;
 constexpr int BOARD_SIZE = 16;
 
 class Board final
 {
 public:
-	using Position = std::pair<int, int>;
 	using Route = std::vector<Position>;
 	//the first index is to the right (x), the second index is to the down (y)
 	template<typename T> using BoardData = std::array<std::array<T, BOARD_SIZE>, BOARD_SIZE>;
 	using BoardVisitedData = BoardData<std::optional<std::pair<Directions, int>>>;
+	using TraverseCallback = std::function<bool(const Position&, const BoardVisitedData&)>;
 	Position MakePosition(int first, int second);
 
 private:
 	std::array<Position, N_PLAYERS> pl_pos;
 	BoardData<bool> board;
+	bool IsPositionLegal(const Position& p, const BoardVisitedData& visited, const Route& route);
+	Directions ToDirection(const Position& begin, const Position& end);
 	//s - position from which exploration goes
-	//p - position which is explore
-	void Explore(Position s, Position p, std::queue<Position>& to_explore, BoardVisitedData& visited, const Route& route);
-
+	//p - position which is explored
+	void BfsExplore(const Position& s, const Position& p, std::queue<Position>& to_explore, BoardVisitedData& visited, const Route& route);
+	bool DfsExplore(const Position& s, const Position& p, const Route& route, TraverseCallback func, BoardVisitedData& visited);
 public:	
 	//Creates an empty board
 	Board();
@@ -49,9 +53,9 @@ public:
 	//if func returns true - traversing stops (and BfsTraverse returns true), otherwise traversing continues
 	//if all available squares were traversed and func was always returning false, BfsTraverse returns false
 	//Parameters that are passed to func only garantee to exsit inside func function
-	bool BfsTraverse(const Position& source, const Route& route, std::function<bool(const Position&, const BoardVisitedData&)> func);
+	bool BfsTraverse(const Position& source, const Route& route, TraverseCallback func);
 	//Traverses game board from the source by using DFS method. All parameters are the same as in BfsTraverse method
-	bool DfsTraverse(const Position& source, const Route& route, std::function<bool(const Position&, const BoardVisitedData&)> func);
+	bool DfsTraverse(const Position& source, const Route& route, TraverseCallback func);
 	//Returns true if heads are conected. Specified route is considered as constraints (along with tails and board bondaries)
 	bool AreHeadsConnected(const Route& route);
 	//Returns available space for for a player. Specified route is considered as constraints (along with tails and board bondaries)
@@ -67,5 +71,6 @@ public:
 	//Returns the longest possible way for the player (approximated by DFS search)
 	Route LongestWay(Players pl);
 };
+
 
 #endif

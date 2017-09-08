@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(HEADERS
+	src/Position.h
 	src/Board.h
 	src/Bot.h
 	src/Parser.h
@@ -9,6 +10,7 @@ set(HEADERS
 	src/BobBot.h)
 
 set(SOURCES 
+	src/Position.cpp
 	src/Board.cpp 
 	src/Bot.cpp 
 	src/Parser.cpp
