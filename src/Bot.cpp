@@ -26,22 +26,22 @@ void Bot::UpdateBoard(const Board& board)
 
 void Bot::SetTimebank(int time) 
 {
-	this->timeBank = time;
+	this->time_bank = time;
 };
 
 void Bot::SetTimePerMove(int time) 
 {
-	this->timePerMove = time;
+	this->time_per_move = time;
 };
 
 void Bot::SetYourBot(const string& name) 
 {
-	this->botName = name;
+	this->bot_name = name;
 };
 
 void Bot::SetYourBotId(Players playerId) 
 { 
-	this->playerId = playerId;  
+	this->player_id = playerId;  
 };
 
 void Bot::SetPlayerNames(const string& player1, const string& player2) 

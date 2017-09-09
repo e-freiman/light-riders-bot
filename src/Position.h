@@ -28,5 +28,6 @@ public:
 	Iterator end() const;
 };
 
+Directions ToDirection(const Position& begin, const Position& end);
 
 #endif

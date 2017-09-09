@@ -10,7 +10,6 @@ int main()
 try
 {
 	shared_ptr<Bot> bot = make_shared<BobBot>();
-
 	Parser parser(bot);
 	parser.Parse();
 	return 0;

@@ -5,10 +5,11 @@
 
 class BobBot : public Bot
 {
+	bool fight_mode{ true };
+	Board::Route longest_way_to_death;
 public:
 	void Move(int time);
 };
 
 #endif
-
 

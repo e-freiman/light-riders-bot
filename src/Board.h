@@ -21,15 +21,20 @@ public:
 	using Route = std::vector<Position>;
 	//the first index is to the right (x), the second index is to the down (y)
 	template<typename T> using BoardData = std::array<std::array<T, BOARD_SIZE>, BOARD_SIZE>;
-	using BoardVisitedData = BoardData<std::optional<std::pair<Directions, int>>>;
+		
+	struct BoardVisitedData final : BoardData<std::optional<std::pair<Directions, int>>>
+	{
+		//Returns a route from sepcified position to a source (direction of the route depends on the second parameter)
+		Route RouteToSource(Position p, bool reversed = false) const;
+	};
+
 	using TraverseCallback = std::function<bool(const Position&, const BoardVisitedData&)>;
 	Position MakePosition(int first, int second);
 
 private:
 	std::array<Position, N_PLAYERS> pl_pos;
 	BoardData<bool> board;
-	bool IsPositionLegal(const Position& p, const BoardVisitedData& visited, const Route& route);
-	Directions ToDirection(const Position& begin, const Position& end);
+	bool IsPositionLegal(const Position& p, const BoardVisitedData& visited, const Route& route);	
 	//s - position from which exploration goes
 	//p - position which is explored
 	void BfsExplore(const Position& s, const Position& p, std::queue<Position>& to_explore, BoardVisitedData& visited, const Route& route);
@@ -71,6 +76,5 @@ public:
 	//Returns the longest possible way for the player (approximated by DFS search)
 	Route LongestWay(Players pl);
 };
-
 
 #endif

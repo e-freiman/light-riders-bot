@@ -5,6 +5,37 @@ using namespace std;
 constexpr auto PLAYER_0 = "0";
 constexpr auto PLAYER_1 = "1";
 
+Board::Route Board::BoardVisitedData::RouteToSource(Position p, bool reversed) const
+{
+	Route route;
+	while ((*this)[p.first][p.second].value().first != Directions::NONE)
+	{
+		reversed ? route.emplace(route.begin(), p) : route.emplace(route.end(), p);
+
+		switch ((*this)[p.first][p.second].value().first)
+		{
+		case Directions::UP:
+			p.second--;
+			break;
+		case Directions::DOWN:
+			p.second++;
+			break;
+		case Directions::LEFT:
+			p.first--;
+			break;
+		case Directions::RIGHT:
+			p.first++;
+			break;
+		default:
+			throw invalid_argument("Unknown direction");
+		}
+	}
+
+	reversed ? route.emplace(route.begin(), p) : route.emplace(route.end(), p);
+
+	return route;
+}
+
 Board::Board() {}
 
 Board::Board(stringstream &&stream)
@@ -49,16 +80,6 @@ bool Board::IsPositionLegal(const Position& p, const BoardVisitedData& visited, 
 	bool hit_tail = board[p.first][p.second] && (std::find(pl_pos.cbegin(), pl_pos.cend(), p) == pl_pos.cend());
 	bool hit_route = std::find(route.cbegin(), route.cend(), p) != route.cend();
 	return in_boundaries && !visited[p.first][p.second].has_value() && !hit_tail && !hit_route;
-}
-
-Directions Board::ToDirection(const Position& begin, const Position& end)
-{
-	if (begin.first < end.first) return Directions::RIGHT;
-	if (begin.first > end.first) return Directions::LEFT;
-	if (begin.second < end.second) return Directions::DOWN;
-	if (begin.second > end.second) return Directions::UP;
-	
-	return Directions::NONE;
 }
 
 void Board::BfsExplore(const Position& s, const Position& p, std::queue<Position>& to_explore, BoardVisitedData& visited, const Route& route)
@@ -157,32 +178,7 @@ Board::Route Board::RouteTo(Players pl, function<bool(const Position& pos)> stop
 	{
 		if (stopping_criteria(p))
 		{
-			Position pos = p;
-
-			while (visited[pos.first][pos.second].value().first != Directions::NONE)
-			{
-				route.emplace(route.begin(), pos);
-
-				switch (visited[pos.first][pos.second].value().first)
-				{
-				case Directions::UP:
-					pos.second--;
-					break;
-				case Directions::DOWN:
-					pos.second++;
-					break;
-				case Directions::LEFT:
-					pos.first--;
-					break;
-				case Directions::RIGHT:
-					pos.first++;
-					break;
-				default:
-					throw invalid_argument("Unknown direction");
-				}
-			}
-
-			route.emplace(route.begin(), pos);
+			route = visited.RouteToSource(p, true);
 			return true;
 		}
 		return false;
@@ -222,9 +218,20 @@ Position Board::Head(Players pl)
 
 Board::Route Board::LongestWay(Players pl)
 {
-	Route route;
+	BoardVisitedData local_visited;
+	Position farest_pos = pl_pos[static_cast<int>(pl)];
 
-	//TODO
+	auto predicate = [&local_visited, &farest_pos](const auto& p, const auto& visited)
+	{
+		local_visited[p.first][p.second] = visited[p.first][p.second];
+		if (visited[p.first][p.second].value().second > visited[farest_pos.first][farest_pos.second].value().second)
+		{
+			farest_pos = p;
+		}
 
-	return route;
+		return false;
+	};
+
+	DfsTraverse(pl_pos[static_cast<int>(pl)], Route(), predicate);
+	return local_visited.RouteToSource(farest_pos, true);
 }

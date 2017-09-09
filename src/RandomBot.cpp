@@ -1,7 +1,7 @@
 #include "RandomBot.h"
 
 void RandomBot::Move(int time) {
-	auto moves = board.LegalMoves(playerId);
+	auto moves = board.LegalMoves(player_id);
 	if (moves.empty())
 	{
 		MakeMove(Directions::UP);

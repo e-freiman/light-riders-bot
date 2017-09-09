@@ -74,3 +74,14 @@ Position::Iterator Position::end() const
 {
 	return Iterator(*this, Directions::NONE);
 }
+
+Directions ToDirection(const Position& begin, const Position& end)
+{
+	if (begin.first < end.first) return Directions::RIGHT;
+	if (begin.first > end.first) return Directions::LEFT;
+	if (begin.second < end.second) return Directions::DOWN;
+	if (begin.second > end.second) return Directions::UP;
+
+	return Directions::NONE;
+}
+
