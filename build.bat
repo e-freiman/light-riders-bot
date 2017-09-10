@@ -11,4 +11,4 @@ for /r %%a in (*.cpp) do (
 
 @echo on
 
-g++ -std=c++1y -static -Isrc -O2 -lm -o build/bob.exe%SRC%
+g++ -std=c++1y -static -Isrc -O2 -lm -o build/snakeit.exe%SRC%

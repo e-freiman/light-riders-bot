@@ -7,7 +7,7 @@ set(HEADERS
 	src/Parser.h
 	src/GameEnums.h
 	src/RandomBot.h
-	src/BobBot.h)
+	src/SnakeitBot.h)
 
 set(SOURCES 
 	src/Position.cpp
@@ -15,7 +15,7 @@ set(SOURCES
 	src/Bot.cpp 
 	src/Parser.cpp
 	src/RandomBot.cpp
-	src/BobBot.cpp 
+	src/SnakeitBot.cpp 
 	main.cpp)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
@@ -26,4 +26,4 @@ else ()
 	message(FATAL_ERROR "${CMAKE_CXX_COMPILER_ID} is not supported")
 endif ()
 
-add_executable(bob ${SOURCES} ${HEADERS})
+add_executable(SnakeIt ${SOURCES} ${HEADERS})

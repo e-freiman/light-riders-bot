@@ -12,11 +12,11 @@ public:
 	class Iterator : public std::iterator<std::forward_iterator_tag, Position>
 	{
 		const Position& source;
-		Directions current_dir;
+		Directions current_direction;
 	public:
 		Iterator(const Position& source, Directions direction);
 		void operator++();
-		Position operator*();
+		Position operator*() const;
 		bool operator!=(const Iterator& rhs) const;
 	};
 

@@ -1,9 +1,9 @@
-#ifndef BOB_BOT_H
-#define BOB_BOT_H
+#ifndef SNAKEIT_BOT_H
+#define SNAKEIT_BOT_H
 
 #include "Bot.h"
 
-class BobBot : public Bot
+class SnakeitBot : public Bot
 {
 	bool fight_mode{ true };
 	Board::Route longest_way_to_death;

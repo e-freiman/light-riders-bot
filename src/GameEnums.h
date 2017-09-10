@@ -3,8 +3,8 @@
 
 enum class Players 
 {
-	Pl1 = 0, 
-	Pl2 = 1
+	PL1 = 0, 
+	PL2 = 1
 };
 
 enum class Directions {

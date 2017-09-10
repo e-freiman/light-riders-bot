@@ -14,25 +14,25 @@ Position::Position()
 }
 
 Position::Iterator::Iterator(const Position& source, Directions direction)
-	: source{ source }, current_dir{ direction }
+	: source{ source }, current_direction{ direction }
 {
 }
 
 void Position::Iterator::operator++()
 {
-	switch (current_dir)
+	switch (current_direction)
 	{
 	case Directions::UP:
-		current_dir = Directions::LEFT;
+		current_direction = Directions::LEFT;
 		break;
 	case Directions::LEFT:
-		current_dir = Directions::DOWN;
+		current_direction = Directions::DOWN;
 		break;
 	case Directions::DOWN:
-		current_dir = Directions::RIGHT;
+		current_direction = Directions::RIGHT;
 		break;
 	case Directions::RIGHT:
-		current_dir = Directions::NONE;
+		current_direction = Directions::NONE;
 		break;
 	case Directions::NONE:
 		throw out_of_range("Overrun");
@@ -41,9 +41,9 @@ void Position::Iterator::operator++()
 	}
 }
 
-Position Position::Iterator::operator*()
+Position Position::Iterator::operator*() const
 {
-	switch (current_dir)
+	switch (current_direction)
 	{
 	case Directions::UP:
 		return Position(source.first, source.second - 1);
@@ -62,7 +62,7 @@ Position Position::Iterator::operator*()
 
 bool Position::Iterator::operator!=(const Iterator& rhs) const
 {
-	return (source != rhs.source) || (current_dir != rhs.current_dir);
+	return (source != rhs.source) || (current_direction != rhs.current_direction);
 }
 
 Position::Iterator Position::begin() const

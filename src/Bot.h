@@ -7,7 +7,8 @@
 class Bot 
 {
 protected:
-	Players player_id;
+	Players my_id;
+	Players enemy_id;
 	int time_bank;
 	int time_per_move;
 	std::string bot_name;

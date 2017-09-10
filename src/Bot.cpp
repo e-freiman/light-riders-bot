@@ -41,7 +41,8 @@ void Bot::SetYourBot(const string& name)
 
 void Bot::SetYourBotId(Players playerId) 
 { 
-	this->player_id = playerId;  
+	this->my_id = playerId;  
+	this->enemy_id = my_id == Players::PL1 ? Players::PL2 : Players::PL1;
 };
 
 void Bot::SetPlayerNames(const string& player1, const string& player2) 
