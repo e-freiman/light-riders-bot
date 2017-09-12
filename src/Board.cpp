@@ -11,7 +11,7 @@ Board::Route Board::BoardVisitedData::RouteToSource(Position p, bool reversed) c
 {
 	Route route;
 	while ((*this)[p.first][p.second].value().first != Directions::NONE)
-	{
+	{	
 		reversed ? route.emplace(route.begin(), p) : route.emplace(route.end(), p);
 
 		switch ((*this)[p.first][p.second].value().first)
@@ -30,10 +30,8 @@ Board::Route Board::BoardVisitedData::RouteToSource(Position p, bool reversed) c
 			break;
 		default:
 			throw invalid_argument("Unknown direction");
-		}
+		}		
 	}
-
-	reversed ? route.emplace(route.begin(), p) : route.emplace(route.end(), p);
 
 	return route;
 }
@@ -78,11 +76,16 @@ set<Directions> Board::LegalMoves(Players pl) const
 
 bool Board::IsPositionLegal(const Position& p, bool traversable_heads) const
 {
-	bool in_boundaries = p.first > 0 && p.first < BOARD_SIZE && p.second > 0 && p.second < BOARD_SIZE;
+	bool in_boundaries = p.first >= 0 && p.first < BOARD_SIZE && p.second >= 0 && p.second < BOARD_SIZE;
+	if (!in_boundaries)
+	{
+		return false;
+	}
+
 	bool hit_head = std::find(pl_pos.cbegin(), pl_pos.cend(), p) != pl_pos.cend();
-	bool hit_tail = board[p.first][p.second] && !hit_head;
+	bool hit_tail = !board[p.first][p.second] && !hit_head;
 	
-	return in_boundaries && !hit_tail && (traversable_heads || !hit_head);
+	return !hit_tail && (traversable_heads || !hit_head);
 }
 
 bool Board::IsPositionLegal(const Position& p, const BoardVisitedData& visited, 
@@ -215,15 +218,15 @@ std::array<int, N_PLAYERS> Board::AvailableSpace(const Route& route) const
 		space = 0;
 
 		for (auto p : route.back())
-		{
-			if (!local_visited[p.first][p.second].has_value() && std::find(route.cbegin(), route.cend(), p) == route.cend())
+		{			
+			if (IsPositionLegal(p, local_visited, route, false))
 			{
 				BfsTraverse(p, route, false, [&space](const auto& p, const auto&) {space++; return false; });
 				break;
 			}
 		}
 		
-		res[static_cast<int>(pl_2)] = space;
+		res[static_cast<int>(pl_2)] = space == 0 ? res[static_cast<int>(pl_outside_route)] : space;
 	}
 	
 	
@@ -301,13 +304,23 @@ bool Board::IsAnyObstacleAround(const Position& pos) const
 	//Traversing up, left, down, right
 	for (auto p : pos)
 	{
-		if (!IsPositionLegal(p, false))
+		if (!IsPositionLegal(p, true))
 			return true;
 	}
 
 	//Traversing diaginal neighbors
-	return !(IsPositionLegal(Position(pos.first + 1, pos.second + 1), false) &&
-		IsPositionLegal(Position(pos.first + 1, pos.second - 1), false) &&
-		IsPositionLegal(Position(pos.first - 1, pos.second + 1), false) &&
-		IsPositionLegal(Position(pos.first - 1, pos.second - 1), false));
+	std::array<Position, 4> diagonals = {
+		Position(pos.first + 1, pos.second + 1),
+		Position(pos.first + 1, pos.second - 1),
+		Position(pos.first - 1, pos.second + 1),
+		Position(pos.first - 1, pos.second - 1)
+	};
+
+	for (auto p : diagonals)
+	{
+		if (!IsPositionLegal(p, true))
+			return true;
+	}
+
+	return false;
 }

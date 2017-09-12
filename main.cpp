@@ -3,6 +3,7 @@
 #include "src/Parser.h"
 #include "src/RandomBot.h"
 #include "src/SnakeitBot.h"
+#include "src/LongestBot.h"
 
 using namespace std;
 

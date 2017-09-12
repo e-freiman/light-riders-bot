@@ -1,4 +1,5 @@
 #include "Position.h"
+#include <assert.h>
 
 using namespace std;
 
@@ -77,6 +78,10 @@ Position::Iterator Position::end() const
 
 Directions ToDirection(const Position& begin, const Position& end)
 {
+	int distance = abs(begin.first - end.first) + abs(begin.second - end.second);
+
+	assert(distance == 0 || distance == 1);
+
 	if (begin.first < end.first) return Directions::RIGHT;
 	if (begin.first > end.first) return Directions::LEFT;
 	if (begin.second < end.second) return Directions::DOWN;

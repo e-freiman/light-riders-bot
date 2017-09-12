@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-const char* BOARD_MOVES[4] = { "up", "down", "left", "right" };
+array<const char*, 4> BOARD_MOVES = { "up", "down", "left", "right" };
 
 Bot::Bot() 
 	: board() 
