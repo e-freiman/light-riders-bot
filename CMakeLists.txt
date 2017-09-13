@@ -8,7 +8,8 @@ set(HEADERS
 	src/GameEnums.h
 	src/RandomBot.h
 	src/SnakeitBot.h
-	src/LongestBot.h)
+	src/LongestBot.h
+	src/Logger.h)
 
 set(SOURCES 
 	src/Position.cpp
@@ -18,6 +19,7 @@ set(SOURCES
 	src/RandomBot.cpp
 	src/SnakeitBot.cpp 
 	src/LongestBot.cpp 
+	src/Logger.cpp
 	main.cpp)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")

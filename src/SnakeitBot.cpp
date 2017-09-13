@@ -1,10 +1,17 @@
 ﻿#include "SnakeitBot.h"
 #include <assert.h>
 
+#define LOGS_ENABLED
+#include "Logger.h"
+
 using namespace std;
 
 void SnakeitBot::Move(int time)
-{
+{	
+	LOG_INIT("logs.txt");
+	LOG(board);
+	LOG("Head: " + std::to_string(static_cast<int>(my_id)));
+
 	std::optional<Position> next;
 
 	//Check if we can fight
@@ -12,6 +19,8 @@ void SnakeitBot::Move(int time)
 	{
 		//Fighting!!!
 		//Figuring out the beginning of the route that could possible cut the enemy from living space
+		LOG("Head: " + std::to_string(static_cast<int>(my_id)) + " IsReachableByAnother = true");
+		
 
 		//Measure by which some routes are more prefered than another
 		double utility{ 0.0 };

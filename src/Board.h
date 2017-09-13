@@ -17,6 +17,7 @@ constexpr int BOARD_SIZE = 16;
 
 class Board final
 {
+	friend class Logger;
 public:
 	using Route = std::vector<Position>;
 	//the first index is to the right (x), the second index is to the down (y)
