@@ -19,8 +19,8 @@ public:
 };
 
 #ifdef LOGS_ENABLED
-	#define LOG(arg) (Logger::GetInstance()->PrintLn(arg))
 	#define LOG_INIT(arg) (Logger::Initialize(arg))
+	#define LOG(arg) (Logger::GetInstance()->PrintLn(arg))
 #else
 	#define LOG(arg)
 	#define LOG_INIT(arg)

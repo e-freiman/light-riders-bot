@@ -55,10 +55,14 @@ void Logger::PrintLn(const Board& board)
 		}
 		out << endl;
 	}
+	out.flush();
+	out.close();
 }
 
 void Logger::PrintLn(const std::string& line)
 {
 	ofstream out(filename, ofstream::app);
 	out << line << endl;
+	out.flush();
+	out.close();
 }

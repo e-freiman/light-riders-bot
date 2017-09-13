@@ -71,7 +71,8 @@ public:
 	//If player1's head leans on the route then is isn't reachable from player2 but player2's head is reachable from player1
 	bool IsReachableByAnother(Players pl, const Route& route) const;
 	//Returns available space for for a player. Specified route is considered as constraints (along with tails and board bondaries)
-	std::array<int, N_PLAYERS> AvailableSpace(const Route& route) const;
+	//It's supposed that the route belongs to specified player.
+	std::array<int, N_PLAYERS> AvailableSpace(Players pl, const Route& route) const;
 	//Returns a route from specified player's head to the destination (includes both edges)
 	Route RouteTo(Players pl, std::function<bool(const Position& pos)> stopping_criteria) const;
 	//Returns distance from player's head to specified root

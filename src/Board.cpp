@@ -120,7 +120,8 @@ bool Board::BfsTraverse(const Position& source, const Route& route, bool travers
 		const auto square = to_explore.front();
 		to_explore.pop();
 
-		if (func(square, visited))
+		bool skip_func = !traversable_heads && std::find(pl_pos.cbegin(), pl_pos.cend(), square) != pl_pos.cend();
+		if (!skip_func && func(square, visited))
 		{
 			return true;
 		}
@@ -140,7 +141,8 @@ bool Board::DfsExplore(const Position& s, const Position& p, const Route& route,
 	int distance = s == p ? 0 : visited[s.first][s.second].value().second + 1;
 	visited[p.first][p.second] = std::make_pair(ToDirection(p, s), distance);
 
-	if (func(p, visited))
+	bool skip_func = !traversable_heads && std::find(pl_pos.cbegin(), pl_pos.cend(), p) != pl_pos.cend();
+	if (!skip_func && func(p, visited))
 	{
 		return true;
 	}
@@ -174,60 +176,40 @@ bool Board::IsReachableByAnother(Players pl, const Route& route) const
 	return BfsTraverse(another_head, route, true, predicate);
 }
 
-std::array<int, N_PLAYERS> Board::AvailableSpace(const Route& route) const
+std::array<int, N_PLAYERS> Board::AvailableSpace(Players pl, const Route& route) const
 {
-	Players pl_outside_route =
-		std::find(route.cbegin(), route.cend(), pl_pos[static_cast<int>(Players::PL1)]) == route.cend() ?
-		Players::PL1 : Players::PL2;
-
-	Players pl_2 = pl_outside_route == Players::PL1 ? Players::PL2 : Players::PL1;
+	Players pl_outside_route = pl == Players::PL1 ?Players::PL2 : Players::PL1;
 
 	assert(std::find(route.cbegin(), route.cend(), pl_pos[static_cast<int>(pl_outside_route)]) == route.cend());
 
 	std::array<int, N_PLAYERS> res;
 
-	if (std::find(route.cbegin(), route.cend(), pl_pos[static_cast<int>(pl_2)]) == route.cend())
+
+	int space = 0;
+	BoardVisitedData local_visited;
+
+	BfsTraverse(pl_pos[static_cast<int>(pl_outside_route)], route, false, [&space, &local_visited](const auto& p, const auto& visited)
 	{
-		//Both player's heads are outside the route
+		space++; 
+		local_visited[p.first][p.second] = visited[p.first][p.second]; 
+		return false; 
+	});
 
-		int space = 0;
-		BfsTraverse(pl_pos[static_cast<int>(pl_outside_route)], route, false, [&space](const auto& p, const auto&) {space++; return false; });
-		res[static_cast<int>(pl_outside_route)] = space;
+	res[static_cast<int>(pl_outside_route)] = space;
 
-		space = 0;
-		BfsTraverse(pl_pos[static_cast<int>(pl_2)], route, false, [&space](const auto& p, const auto&) {space++; return false; });
-		res[static_cast<int>(pl_2)] = space;
-	}
-	else
-	{
-		//Second player's head is on the route
+	//Figuring out source for route's player traversing
+	space = 0;
 
-		int space = 0;
-		BoardVisitedData local_visited;
-
-		BfsTraverse(pl_pos[static_cast<int>(pl_outside_route)], route, false, [&space, &local_visited](const auto& p, const auto& visited)
+	for (auto p : route.back())
+	{			
+		if (IsPositionLegal(p, local_visited, route, false))
 		{
-			space++; 
-			local_visited[p.first][p.second] = visited[p.first][p.second]; 
-			return false; 
-		});
-
-		res[static_cast<int>(pl_outside_route)] = space;
-
-		//Figuring out source for second player traversing
-		space = 0;
-
-		for (auto p : route.back())
-		{			
-			if (IsPositionLegal(p, local_visited, route, false))
-			{
-				BfsTraverse(p, route, false, [&space](const auto& p, const auto&) {space++; return false; });
-				break;
-			}
+			BfsTraverse(p, route, false, [&space](const auto& p, const auto&) {space++; return false; });
+			break;
 		}
-		
-		res[static_cast<int>(pl_2)] = space == 0 ? res[static_cast<int>(pl_outside_route)] : space;
 	}
+		
+	res[static_cast<int>(pl)] = space == 0 ? res[static_cast<int>(pl_outside_route)] : space;
 	
 	
 	return res;
@@ -283,6 +265,7 @@ Board::Route Board::LongestWay(Players pl) const
 {
 	BoardVisitedData local_visited;
 	Position farest_pos = pl_pos[static_cast<int>(pl)];
+	local_visited[farest_pos.first][farest_pos.second] = std::make_pair(Directions::NONE, 0);
 
 	auto predicate = [&local_visited, &farest_pos](const auto& p, const auto& visited)
 	{
