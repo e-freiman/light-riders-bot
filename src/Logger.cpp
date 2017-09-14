@@ -1,4 +1,4 @@
-#include "Logger.h";
+#include "Logger.h"
 
 #include <fstream>
 
@@ -50,7 +50,7 @@ void Logger::PrintLn(const Board& board)
 			}
 			
 			if (empty_square) out << EMPTY;
-			else if (player.has_value()) out << player.value();
+			else if (player) out << player.value();
 			else out << TAIL;
 		}
 		out << endl;

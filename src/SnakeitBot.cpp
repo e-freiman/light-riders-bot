@@ -61,7 +61,7 @@ void SnakeitBot::Move(int time)
 		board.BfsTraverse(board.Head(my_id), Board::Route(), false, predicate);			
 	}
 	
-	if (!next.has_value())
+	if (!next)
 	{
 		Board::Route route = board.LongestWay(my_id);
 		if (!route.empty())
@@ -72,7 +72,7 @@ void SnakeitBot::Move(int time)
 		}
 	}	
 	
-	if (next.has_value())
+	if (next)
 	{
 		MakeMove(ToDirection(board.Head(my_id), next.value()));
 	}

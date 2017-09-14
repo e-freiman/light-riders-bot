@@ -8,7 +8,7 @@
 #include <array>
 #include "GameEnums.h"
 #include <functional>
-#include <optional>
+#include "Optional.h"
 
 #include "Position.h"
 

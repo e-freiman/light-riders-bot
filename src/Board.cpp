@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include "Board.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -93,7 +94,7 @@ bool Board::IsPositionLegal(const Position& p, const BoardVisitedData& visited,
 {
 	bool legal_on_board = IsPositionLegal(p, traversable_heads);
 	bool hit_route = std::find(route.cbegin(), route.cend(), p) != route.cend();
-	return legal_on_board && !visited[p.first][p.second].has_value() && !hit_route;
+	return legal_on_board && !visited[p.first][p.second] && !hit_route;
 }
 
 void Board::BfsExplore(const Position& s, const Position& p, std::queue<Position>& to_explore, 
